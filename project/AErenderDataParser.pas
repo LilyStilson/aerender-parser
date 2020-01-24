@@ -17,23 +17,21 @@ type
     H, MM, SS, FR: Cardinal;
   end;
 
-  AErenderData = record
+  TAErenderData = record
     LogData: TAErenderLogType;
     Timecode: TTimecode;
     Frame: Cardinal;
     InitialMessage: String;
   end;
 
-  function ParseAErenderLogString (const LogString: String): AErenderData;
+  function ParseAErenderLogString (const LogString: String): TAErenderData;
 
 implementation
 
-function ParseAErenderLogString (const LogString: String): AErenderData;
+function ParseAErenderLogString (const LogString: String): TAErenderData;
 begin
   if LogString.Contains('PROGRESS: ') then begin
     Result.InitialMessage := LogString.Replace('PROGRESS:  ', '');
-
-
   end;
 end;
 
