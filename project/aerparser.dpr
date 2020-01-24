@@ -13,7 +13,7 @@ const
 
 begin
   try
-    Writeln ('');
+    Writeln (ParseAErenderLogString(TestString).InitialMessage);
     Readln;
   except
     on E: Exception do
