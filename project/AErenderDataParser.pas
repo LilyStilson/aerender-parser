@@ -16,9 +16,16 @@ interface
     AErenderData = record
       LogData: TAErenderLogType;
       Timecode: TTimecode;
-      Frame: TFrame;
+      Frame: Cardinal;
     end;
+  function ParseAErenderLogString (const LogString: String): AErenderData;
+
 
 implementation
+
+function ParseAErenderLogString (const LogString: String): AErenderData;
+begin
+  //
+end;
 
 end.
