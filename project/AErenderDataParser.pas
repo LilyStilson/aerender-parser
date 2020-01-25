@@ -24,10 +24,9 @@ type
   end;
 
   ///<summary>
-  ///Parsed aerender string data type
+  ///Parsed aerender frame string data type.
   ///</summary>
-  TAErenderData = record
-    LogData: TAErenderLogType;
+  TAErenderFrameData = record
     Timecode: TTimecode;
     Frame: Cardinal;
     ElapsedTime: Cardinal;
@@ -35,13 +34,13 @@ type
   end;
   
   ///<summary>
-  ///Parses aerender log string and returns record of it's contents
+  ///Parses aerender log string and returns record of it's contents.
   ///</summary>
-  function ParseAErenderLogString (const ILogString: String): TAErenderData;
+  function ParseAErenderFrameLogString (const ILogString: String): TAErenderFrameData;
 
 implementation
 
-function ParseAErenderLogString (const ILogString: String): TAErenderData;
+function ParseAErenderFrameLogString (const ILogString: String): TAErenderFrameData;
 var 
   AString: String;
 begin
