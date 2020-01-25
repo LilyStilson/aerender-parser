@@ -6,6 +6,9 @@ uses
   System.SysUtils;
 
 type
+  ///<summary>
+  ///A set of constants that will determine current aerender state.
+  ///</summary>
   TAErenderLogType = record
     const
       Information: Integer = 0;
@@ -13,6 +16,9 @@ type
       Error: Integer = 2;
   end;
 
+  ///<summary>
+  ///Record that represents standard After Effects timecode data.
+  ///</summary>
   TTimecode = record
     H, MM, SS, FR: Cardinal;
   end;
