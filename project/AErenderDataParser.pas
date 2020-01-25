@@ -37,7 +37,7 @@ type
   ///<summary>
   ///Parses aerender log string and returns record of it's contents
   ///</summary>
-  function ParseAErenderLogString (const LogString: String): TAErenderData;
+  function ParseAErenderLogString (const ILogString: String): TAErenderData;
 
 implementation
 
@@ -76,7 +76,7 @@ begin
     //Read current render frame from timecode and remove it from temporary string
     var AFrame: String;
     var ACounter: Integer;
-    while not AString[1] = ')' do begin
+    while AString[1] <> ')' do begin
       AFrame := AFrame + AString[1];
       AString.Remove(1);
     end;
