@@ -23,6 +23,9 @@ type
     H, MM, SS, FR: Cardinal;
   end;
 
+  ///<summary>
+  ///Parsed aerender string data type
+  ///</summary>
   TAErenderData = record
     LogData: TAErenderLogType;
     Timecode: TTimecode;
