@@ -30,6 +30,7 @@ type
     LogData: TAErenderLogType;
     Timecode: TTimecode;
     Frame: Cardinal;
+    ElapsedTime: Cardinal;
     InitialMessage: String;
   end;
   
@@ -75,16 +76,22 @@ begin
     //Read current render frame from timecode and remove it from temporary string
     var AFrame: String;
     var ACounter: Integer;
-    for var i := 1 to Length(AString) do begin
-      if not AString[i] = ')' then begin
-          AFrame := AFrame + AString[i];
-      end
-      else
-        break;
+    while not AString[1] = ')' do begin
+      AFrame := AFrame + AString[1];
+      AString.Remove(1);
     end;
     Result.Frame := StrToInt(AFrame);
-    
-    {  AString = '1): 0 Seconds'  }
+    AString.Remove(3);
+    {  AString = '0 Seconds'  }
+
+    //Read elapsed time to render one frame and clear the string
+    var AElapsedTime: String;
+    while AString[2] = 'S' do begin
+      AElapsedTime := AElapsedTime + AString[1];
+      AString.Remove(1);
+    end;
+    Result.ElapsedTime := StrToInt(AElapsedTime);
+    {  AString = ' Seconds'  }
   end;
 end;
 
