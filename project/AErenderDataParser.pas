@@ -32,7 +32,10 @@ type
     Frame: Cardinal;
     InitialMessage: String;
   end;
-
+  
+  ///<summary>
+  ///Parses aerender log string and returns record of it's contents
+  ///</summary>
   function ParseAErenderLogString (const LogString: String): TAErenderData;
 
 implementation
