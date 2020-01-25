@@ -40,10 +40,51 @@ type
 
 implementation
 
-function ParseAErenderLogString (const LogString: String): TAErenderData;
+function ParseAErenderLogString (const ILogString: String): TAErenderData;
+var 
+  AString: String;
 begin
-  if LogString.Contains('PROGRESS: ') then begin
-    Result.InitialMessage := LogString.Replace('PROGRESS:  ', '');
+  Result.InitialMessage := ILogString;
+  AString := ILogString;
+  {  AString = 'PROGRESS:  0:00:00:00 (1): 0 Seconds'  }
+  if ILogString.Contains('PROGRESS: ') then begin
+    //Get rid of PROGRESS response in initial string
+    AString := ILogString.Replace('PROGRESS:  ', '');
+    {  AString = '0:00:00:00 (1): 0 Seconds'  }
+
+    //Read hours from timecode and remove it from temporary string
+    Result.Timecode.H := StrToInt(AString[1]);
+    AString.Remove(2);
+    {  AString = '00:00:00 (1): 0 Seconds'  }
+
+    //Read minutes from timecode and remove it from temporary string
+    Result.Timecode.MM := StrToInt(AString[1] + AString[2]);
+    AString.Remove(3);
+    {  AString = '00:00 (1): 0 Seconds'  }
+
+    //Read seconds from timecode and remove it from temporary string
+    Result.Timecode.SS := StrToInt(AString[1] + AString[2]);
+    AString.Remove(3);
+    {  AString = '00 (1): 0 Seconds'  }
+
+    //Read frames from timecode and remove it from temporary string
+    Result.Timecode.FR := StrToInt(AString[1] + AString[2]);
+    AString.Remove(4);
+    {  AString = '1): 0 Seconds'  }
+
+    //Read current render frame from timecode and remove it from temporary string
+    var AFrame: String;
+    var ACounter: Integer;
+    for var i := 1 to Length(AString) do begin
+      if not AString[i] = ')' then begin
+          AFrame := AFrame + AString[i];
+      end
+      else
+        break;
+    end;
+    Result.Frame := StrToInt(AFrame);
+    
+    {  AString = '1): 0 Seconds'  }
   end;
 end;
 
