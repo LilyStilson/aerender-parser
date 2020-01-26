@@ -30,7 +30,7 @@ program aerparser;
 
 uses
   System.SysUtils,
-  AErenderDataParser;
+  AErenderDataParser in '..\AErenderDataParser.pas';
 
 const
   ProgressString  = 'PROGRESS:  0:00:03:18 (199): 0 Seconds';
