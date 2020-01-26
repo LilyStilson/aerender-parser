@@ -41,6 +41,11 @@ type
   end;
 
   ///<summary>
+  ///A more convinient way to call Single-typ framerates.
+  ///</summary>
+  TFrameRate = Extended;
+
+  ///<summary>
   ///Record that represents standard After Effects timecode data.
   ///</summary>
   TTimecode = record
@@ -49,14 +54,19 @@ type
       {Private declartions}
     public
       /// <summary>
-      /// Converts parsed timecode to string with 'H:MM:SS:FR' format
+      /// Converts parsed timecode to string with 'H:MM:SS:FR' format.
       /// </summary>
       function ToSingleString(): String;
 
       /// <summary>
-      /// Converts parsed timecode to string with H, MM, SS, FR being separated
+      /// Converts parsed timecode to string with H, MM, SS, FR being separated.
       /// </summary>
       function ToExpandedString(Delimeter: String): String;
+
+      /// <summary>
+      /// Calculates total ammount of seconds from timecode
+      /// </summary>
+      function ToSeconds(): Cardinal;
   end;
 
   ///<summary>
@@ -70,14 +80,26 @@ type
   end;
 
   /// <summary>
-  /// Transforms string with 'H:MM:SS:FR' format to TTimecode
+  /// Transforms string with 'H:MM:SS:FR' format to TTimecode.
   /// </summary>
   function StrToTimecode (const ITimecodeString: String; var ATimecode: TTimecode): String;
+
+  function TimecodeToFrames (const Timecode: TTimecode; const FrameRate: TFrameRate): Cardinal;
 
   ///<summary>
   ///Parses aerender log string and returns record of it's contents.
   ///</summary>
   function ParseAErenderFrameLogString (const ILogString: String): TAErenderFrameData;
+
+  ///<summary>
+  ///Parses aerender log string and returns TTimecode value of render area duration.
+  ///</summary>
+  function ParseAErenderDurationLogString (const ILogString: String): TTimecode;
+
+  ///<summary>
+  ///Parses aerender log string and returns TFrameRate value of render framerate.
+  ///</summary>
+  function ParseAErenderFrameRateLogString (const ILogString: String): TFrameRate;
 
 implementation
 
@@ -121,6 +143,12 @@ begin
     Result := Result + 'FR: ' + Self.FR.ToString;
 end;
 
+function TTimecode.ToSeconds(): Cardinal;
+begin
+  //  {H -> MM} + {MM -> SS} + SS
+  Result := (Self.H * 60 * 60) + (Self.MM * 60) + Self.SS;
+end;
+
 function StrToTimecode (const ITimecodeString: String; var ATimecode: TTimecode): String;
 var
   ATimecodeString: String;
@@ -150,6 +178,11 @@ begin
   Result := ATimecodeString;
 end;
 
+function TimecodeToFrames (const Timecode: TTimecode; const FrameRate: TFrameRate): Cardinal;
+begin
+  Result := Trunc((Timecode.ToSeconds + Timecode.FR) * FrameRate);
+end;
+
 function ParseAErenderFrameLogString (const ILogString: String): TAErenderFrameData;
 var 
   AString: String;
@@ -159,7 +192,7 @@ begin
   {  AString = 'PROGRESS:  0:00:00:00 (1): 0 Seconds'  }
   if ILogString.Contains('PROGRESS: ') then begin
     //Get rid of PROGRESS response in initial string
-    AString := ILogString.Replace('PROGRESS:  ', '');
+    AString := AString.Replace('PROGRESS:  ', '');
     {  AString = '0:00:00:00 (1): 0 Seconds'  }
 
     AString := StrToTimecode(AString, Result.Timecode);
@@ -182,6 +215,49 @@ begin
     end;
     Result.ElapsedTime := StrToInt(AElapsedTime);
     {  AString = ' Seconds'  }
+  end else begin
+    raise Exception.Create('Parsing error (-1): Provided string cannot be parsed.');
+  end;
+end;
+
+function ParseAErenderDurationLogString (const ILogString: String): TTimecode;
+var
+  AString: String;
+begin
+  AString := ILogString;
+  {  AString = 'PROGRESS:  Duration: 0:00:10:00'  }
+  if AString.Contains ('Duration: ') then begin
+    AString := AString.Replace('PROGRESS:  Duration: ', '');
+    {  AString = '0:00:10:00'  }
+
+    AString := StrToTimecode (AString, Result);
+    {  AString = ''  }
+  end else begin
+    raise Exception.Create('Parsing error (-1): Provided string cannot be parsed.');
+  end;
+
+end;
+
+function ParseAErenderFrameRateLogString (const ILogString: String): TFrameRate;
+var
+  AString: String;
+begin
+  AString := ILogString;
+  {  AString = 'PROGRESS:  Frame Rate: 60.00 (comp)'  }
+
+  if AString.Contains ('Frame Rate: ') then begin
+    AString := AString.Replace('PROGRESS:  Frame Rate: ', '');
+    {  AString = '60.00 (comp)'  }
+    var AFrameRate: String;
+    for var i := 1 to Length (AString) do
+      if AString[i + 1] <> '(' then begin
+        AFrameRate := AFrameRate + AString[i]
+      end else begin
+        break
+      end;
+    Result := AFrameRate.ToExtended();
+  end else begin
+    raise Exception.Create('Parsing error (-1): Provided string cannot be parsed.');
   end;
 end;
 

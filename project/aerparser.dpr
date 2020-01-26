@@ -33,20 +33,23 @@ uses
   AErenderDataParser;
 
 const
-  TestString = 'PROGRESS:  0:00:03:18 (199): 0 Seconds';
-  FramesTestString =  'PROGRESS:  Start: 0:00:00:00' + #13#10 +
-                      'PROGRESS:  End: 0:00:09:59' + #13#10 +
-                      'PROGRESS:  Duration: 0:00:10:00' + #13#10 +
-                      'PROGRESS:  Frame Rate: 60.00 (comp)';
+  ProgressString  = 'PROGRESS:  0:00:03:18 (199): 0 Seconds';
+  DurationString  = 'PROGRESS:  Duration: 0:00:10:00';
+  FrameRateString = 'PROGRESS:  Frame Rate: 60.00 (comp)';
 
 begin
   try
-    Writeln ('Initial String      = ' + TestString);
+    //Writeln ('Initial String      = ' + TestString);
 
-    var AERD: TAErenderFrameData := ParseAErenderFrameLogString(TestString);
+    //var AERD: TAErenderFrameData := ParseAErenderFrameLogString(TestString);
+    var SavedTimecode: TTimecode := ParseAErenderDurationLogString(DurationString);
+    Writeln ('Duration      = ' + SavedTimecode.ToSingleString);
 
-    Writeln ('Processed short timecode  = ' + AERD.Timecode.ToSingleString);
-    Writeln ('Processed extended timecode  = ' + AERD.Timecode.ToExpandedString('    '));
+    var SavedFrameRate: TFrameRate := ParseAErenderFrameRateLogString(FrameRateString);
+    Writeln ('FrameRate     = ' + SavedFrameRate.ToString);
+
+    Writeln ('Total Frames  = ' + TimecodeToFrames(SavedTimecode, SavedFrameRate).ToString);
+
 
   except
     on E: Exception do
