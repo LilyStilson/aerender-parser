@@ -45,6 +45,18 @@ type
   ///</summary>
   TTimecode = record
     H, MM, SS, FR: Cardinal;
+    private
+      {}
+    public
+      /// <summary>
+      /// Converts parsed timecode to string with 'H:MM:SS:FR' format
+      /// </summary>
+      function ToSingleString(): String;
+
+      /// <summary>
+      /// Converts parsed timecode to string with H, MM, SS, FR being separated
+      /// </summary>
+      function ToExpandedString(Delimeter: String): String;
   end;
 
   ///<summary>
@@ -56,13 +68,87 @@ type
     ElapsedTime: Cardinal;
     InitialMessage: String;
   end;
-  
+
+  /// <summary>
+  /// Transforms string with 'H:MM:SS:FR' format to TTimecode
+  /// </summary>
+  function StrToTimecode (const ITimecodeString: String; var ATimecode: TTimecode): String;
+
   ///<summary>
   ///Parses aerender log string and returns record of it's contents.
   ///</summary>
   function ParseAErenderFrameLogString (const ILogString: String): TAErenderFrameData;
 
 implementation
+
+function TTimecode.ToSingleString(): String;
+begin
+  Result := Result + Self.H.ToString + ':';
+
+  if Self.MM < 10 then
+    Result := Result + '0' + Self.MM.ToString + ':'
+  else
+    Result := Result + Self.MM.ToString + ':';
+
+  if Self.SS < 10 then
+    Result := Result + '0' + Self.SS.ToString + ':'
+  else
+    Result := Result + Self.SS.ToString + ':';
+
+  if Self.FR < 10 then
+    Result := Result + '0' + Self.FR.ToString
+  else
+    Result := Result + Self.FR.ToString;
+end;
+
+function TTimecode.ToExpandedString(Delimeter: String): String;
+begin
+  Result := Result + 'H: ' + Self.H.ToString + Delimeter;
+
+  if Self.MM < 10 then
+    Result := Result + 'M: ' + '0' + Self.MM.ToString + Delimeter
+  else
+    Result := Result + 'M: ' + Self.MM.ToString + ':';
+
+  if Self.SS < 10 then
+    Result := Result + 'S: ' + '0' + Self.SS.ToString + Delimeter
+  else
+    Result := Result + 'S: ' + Self.SS.ToString + Delimeter;
+
+  if Self.FR < 10 then
+    Result := Result + 'FR: ' + '0' + Self.FR.ToString
+  else
+    Result := Result + 'FR: ' + Self.FR.ToString;
+end;
+
+function StrToTimecode (const ITimecodeString: String; var ATimecode: TTimecode): String;
+var
+  ATimecodeString: String;
+begin
+  ATimecodeString := ITimecodeString;
+
+  //Read hours from timecode and remove it from temporary string
+  ATimecode.H := StrToInt(ATimecodeString[1]);
+  Delete(ATimecodeString, 1, 2);
+  {  AString = '00:00:00 (1): 0 Seconds'  }
+
+  //Read minutes from timecode and remove it from temporary string
+  ATimecode.MM := StrToInt(ATimecodeString[1] + ATimecodeString[2]);
+  Delete(ATimecodeString, 1, 3);
+  {  AString = '00:00 (1): 0 Seconds'  }
+
+  //Read seconds from timecode and remove it from temporary string
+  ATimecode.SS := StrToInt(ATimecodeString[1] + ATimecodeString[2]);
+  Delete(ATimecodeString, 1, 3);
+  {  AString = '00 (1): 0 Seconds'  }
+
+  //Read frames from timecode and remove it from temporary string
+  ATimecode.FR := StrToInt(ATimecodeString[1] + ATimecodeString[2]);
+  Delete(ATimecodeString, 1, 4);
+  {  AString = '1): 0 Seconds'  }
+
+  Result := ATimecodeString;
+end;
 
 function ParseAErenderFrameLogString (const ILogString: String): TAErenderFrameData;
 var 
@@ -76,25 +162,7 @@ begin
     AString := ILogString.Replace('PROGRESS:  ', '');
     {  AString = '0:00:00:00 (1): 0 Seconds'  }
 
-    //Read hours from timecode and remove it from temporary string
-    Result.Timecode.H := StrToInt(AString[1]);
-    Delete(AString, 1, 2);
-    {  AString = '00:00:00 (1): 0 Seconds'  }
-
-    //Read minutes from timecode and remove it from temporary string
-    Result.Timecode.MM := StrToInt(AString[1] + AString[2]);
-    Delete(AString, 1, 3);
-    {  AString = '00:00 (1): 0 Seconds'  }
-
-    //Read seconds from timecode and remove it from temporary string
-    Result.Timecode.SS := StrToInt(AString[1] + AString[2]);
-    Delete(AString, 1, 3);
-    {  AString = '00 (1): 0 Seconds'  }
-
-    //Read frames from timecode and remove it from temporary string
-    Result.Timecode.FR := StrToInt(AString[1] + AString[2]);
-    Delete(AString, 1, 4);
-    {  AString = '1): 0 Seconds'  }
+    AString := StrToTimecode(AString, Result.Timecode);
 
     //Read current render frame from timecode and remove it from temporary string
     var AFrame: String;

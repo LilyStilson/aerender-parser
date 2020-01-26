@@ -34,23 +34,19 @@ uses
 
 const
   TestString = 'PROGRESS:  0:00:03:18 (199): 0 Seconds';
-
-var
-  AERD: TAErenderFrameData;
+  FramesTestString =  'PROGRESS:  Start: 0:00:00:00' + #13#10 +
+                      'PROGRESS:  End: 0:00:09:59' + #13#10 +
+                      'PROGRESS:  Duration: 0:00:10:00' + #13#10 +
+                      'PROGRESS:  Frame Rate: 60.00 (comp)';
 
 begin
   try
-    Writeln ('Initial String    = ' + TestString);
+    Writeln ('Initial String      = ' + TestString);
 
-    AERD := ParseAErenderFrameLogString(TestString);
+    var AERD: TAErenderFrameData := ParseAErenderFrameLogString(TestString);
 
-    Writeln ('Current Frame     = ' + AERD.Frame.ToString);
-    Writeln ('Elapsed Time      = ' + AERD.ElapsedTime.ToString);
+    Writeln ('Processed timecode  = ' + AERD.Timecode.ToSingleString);
 
-    Writeln;
-    Writeln ('Timecode');
-    Writeln ('H: ' + AERD.Timecode.H.ToString + '   M: ' + AERD.Timecode.MM.ToString + '   S: '
-              + AERD.Timecode.SS.ToString + '   FR: ' + AERD.Timecode.FR.ToString);
   except
     on E: Exception do
       Writeln(E.ClassName, ': ', E.Message);
