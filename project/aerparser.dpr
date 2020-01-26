@@ -45,7 +45,8 @@ begin
 
     var AERD: TAErenderFrameData := ParseAErenderFrameLogString(TestString);
 
-    Writeln ('Processed timecode  = ' + AERD.Timecode.ToSingleString);
+    Writeln ('Processed short timecode  = ' + AERD.Timecode.ToSingleString);
+    Writeln ('Processed extended timecode  = ' + AERD.Timecode.ToExpandedString('    '));
 
   except
     on E: Exception do

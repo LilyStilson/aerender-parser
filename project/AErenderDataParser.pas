@@ -46,7 +46,7 @@ type
   TTimecode = record
     H, MM, SS, FR: Cardinal;
     private
-      {}
+      {Private declartions}
     public
       /// <summary>
       /// Converts parsed timecode to string with 'H:MM:SS:FR' format
