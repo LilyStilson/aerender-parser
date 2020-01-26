@@ -1,6 +1,6 @@
 program aerparser;
 
-(*        AErender Data Parser Test Program                                                 *)
+(*        AErender Data Parser Example Project                                              *)
 (*        Lily Stilson // 2020                                                              *)
 (*        MIT License                                                                       *)
 (*                                                                                          *)
@@ -39,18 +39,25 @@ const
 
 begin
   try
-    //Writeln ('Initial String      = ' + TestString);
+    Writeln ('AErenderDataParser Example' + #13#10 + 'Lily Stilson // 2020' + #13#10 + '---------------------------' + #13#10);
 
-    //var AERD: TAErenderFrameData := ParseAErenderFrameLogString(TestString);
+    Writeln ( 'Progress String    = "' + ProgressString + '"' + #13#10 +
+              'Duration String    = "' + DurationString + '"' + #13#10 +
+              'Frame Rate String  = "' + FrameRateString + '"' + #13#10);
+
+    var SavedProgress: TAErenderFrameData := ParseAErenderFrameLogString(ProgressString);
+    Writeln ( 'Extracted Progress Data' + #13#10 + '---------------------------' + #13#10 +
+              'Timecode      = ' + SavedProgress.Timecode.ToSingleString + #13#10 +
+              'Frame         = ' + SavedProgress.Frame.ToString + #13#10 +
+              'Time          = ' + SavedProgress.ElapsedTime.ToString + #13#10);
+
     var SavedTimecode: TTimecode := ParseAErenderDurationLogString(DurationString);
     Writeln ('Duration      = ' + SavedTimecode.ToSingleString);
 
     var SavedFrameRate: TFrameRate := ParseAErenderFrameRateLogString(FrameRateString);
-    Writeln ('FrameRate     = ' + SavedFrameRate.ToString);
+    Writeln ('Frame Rate    = ' + SavedFrameRate.ToString);
 
     Writeln ('Total Frames  = ' + TimecodeToFrames(SavedTimecode, SavedFrameRate).ToString);
-
-
   except
     on E: Exception do
       Writeln(E.ClassName, ': ', E.Message);
