@@ -53,10 +53,12 @@ type
     private
       {Private declartions}
     public
+      constructor Create(const H, MM, SS, FR: Cardinal);
+      
       /// <summary>
       /// Converts parsed timecode to string with 'H:MM:SS:FR' format.
       /// </summary>
-      function ToSingleString(): String;
+      function ToSingleString: String;
 
       /// <summary>
       /// Converts parsed timecode to string with H, MM, SS, FR being separated.
@@ -102,6 +104,14 @@ type
   function ParseAErenderFrameRateLogString (const ILogString: String): TFrameRate;
 
 implementation
+
+constructor TTimecode.Create(const H, MM, SS, FR: Cardinal);
+begin
+  Self.H  := H;
+  Self.MM := MM;
+  Self.SS := SS;
+  Self.FR := FR;
+end;
 
 function TTimecode.ToSingleString(): String;
 begin
