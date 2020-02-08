@@ -7,7 +7,7 @@ unit AErenderDataParser;
 (*        Copyright (c) 2020 Alice Romanets                                                 *)
 (*                                                                                          *)
 (*        Permission is hereby granted, free of charge, to any person obtaining a copy      *)
-(*        of this software and associated documentation files (the "Software"), to deal     *)
+(*        of this software and associated documentation files (the "Software"), to deal      *)
 (*        in the Software without restriction, including without limitation the rights      *)
 (*        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell         *)
 (*        copies of the Software, and to permit persons to whom the Software is             *)
@@ -23,6 +23,8 @@ unit AErenderDataParser;
 (*        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,     *)
 (*        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE     *)
 (*        SOFTWARE.                                                                         *)
+
+{$EXTENDEDCOMPATIBILITY ON}
 
 interface
 
@@ -43,7 +45,7 @@ type
   ///<summary>
   ///A more convinient way to call Single-typ framerates.
   ///</summary>
-  TFrameRate = Extended;
+  TFrameRate = Real;
 
   ///<summary>
   ///Record that represents standard After Effects timecode data.
@@ -236,15 +238,15 @@ var
 begin
   AString := ILogString;
   {  AString = 'PROGRESS:  Duration: 0:00:10:00'  }
-  if AString.Contains ('Duration: ') then begin
+  //if AString.Contains ('Duration: ') then begin
     AString := AString.Replace('PROGRESS:  Duration: ', '');
     {  AString = '0:00:10:00'  }
 
     AString := StrToTimecode (AString, Result);
     {  AString = ''  }
-  end else begin
+  {end else begin
     raise Exception.Create('Parsing error (-1): Provided string cannot be parsed.');
-  end;
+  end;}
 
 end;
 
@@ -252,10 +254,11 @@ function ParseAErenderFrameRateLogString (const ILogString: String): TFrameRate;
 var
   AString: String;
 begin
+  FormatSettings.DecimalSeparator := '.';
   AString := ILogString;
   {  AString = 'PROGRESS:  Frame Rate: 60.00 (comp)'  }
 
-  if AString.Contains ('Frame Rate: ') then begin
+  //if AString.Contains ('Frame Rate: ') then begin
     AString := AString.Replace('PROGRESS:  Frame Rate: ', '');
     {  AString = '60.00 (comp)'  }
     var AFrameRate: String;
@@ -265,10 +268,10 @@ begin
       end else begin
         break
       end;
-    Result := AFrameRate.ToExtended();
-  end else begin
+    Result := StrToFloat(AFrameRate);
+  {end else begin
     raise Exception.Create('Parsing error (-1): Provided string cannot be parsed.');
-  end;
+  end;}
 end;
 
 end.
