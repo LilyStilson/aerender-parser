@@ -29,12 +29,12 @@ program aerparser;
 {$R *.res}
 
 uses
-  System.SysUtils,
+  System.SysUtils, System.Types, System.Character, System.Variants,
   AErenderDataParser in '..\AErenderDataParser.pas';
 
 const
   ProgressString  = 'PROGRESS:  0:00:03:18 (199): 0 Seconds';
-  DurationString  = 'PROGRESS:  Duration: 0:00:10:00';
+  DurationString  = 'PROGRESS:  Duration: 0:00:02:31';
   FrameRateString = 'PROGRESS:  Frame Rate: 60.00 (comp)';
 
 begin
@@ -55,7 +55,7 @@ begin
     Writeln ('Duration      = ' + SavedTimecode.ToSingleString);
 
     var SavedFrameRate: TFrameRate := ParseAErenderFrameRateLogString(FrameRateString);
-    Writeln ('Frame Rate    = ' + SavedFrameRate.ToString);
+    Writeln ('Frame Rate    = ' + FloatToStr(SavedFrameRate));
 
     Writeln ('Total Frames  = ' + TimecodeToFrames(SavedTimecode, SavedFrameRate).ToString);
   except
