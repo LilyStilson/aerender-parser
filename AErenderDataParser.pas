@@ -56,6 +56,7 @@ type
       {Private declartions}
     public
       constructor Create(const H, MM, SS, FR: Cardinal);
+      procedure Clear;
       
       /// <summary>
       /// Converts parsed timecode to string with 'H:MM:SS:FR' format.
@@ -113,6 +114,14 @@ begin
   Self.MM := MM;
   Self.SS := SS;
   Self.FR := FR;
+end;
+
+procedure TTimecode.Clear;
+begin
+  Self.H := 0;
+  Self.MM := 0;
+  Self.SS := 0;
+  Self.FR := 0;
 end;
 
 function TTimecode.ToSingleString(): String;
@@ -254,8 +263,11 @@ function ParseAErenderFrameRateLogString (const ILogString: String): TFrameRate;
 var
   AString: String;
 begin
-  FormatSettings.DecimalSeparator := '.';
-  AString := ILogString;
+  //Added to get rid of decimal separators
+  if ILogString.Contains(',') then
+    AString := ILogString.Replace(',', '.')
+  else
+    AString := ILogString;
   {  AString = 'PROGRESS:  Frame Rate: 60.00 (comp)'  }
 
   //if AString.Contains ('Frame Rate: ') then begin
